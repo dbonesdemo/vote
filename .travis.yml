@@ -1,0 +1,29 @@
+sudo: required
+
+language: python
+
+python:
+  - 2.7
+
+services:
+  - docker
+
+install:
+  #- cd $TRAVIS_BUILD_DIR
+  #- cd src
+  #- pip install -r requirements.txt
+
+before_script:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+
+after_success:
+  - cd $TRAVIS_BUILD_DIR
+  - cd src
+  - docker build -t "davecss/vote:latest" -t "davecss/vote:1.0.$TRAVIS_BUILD_NUMBER" .
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: docker push davecss/vote
+  on:
+    branch: master
